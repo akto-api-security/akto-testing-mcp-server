@@ -2,20 +2,20 @@ import { z } from "zod";
 import { config } from "../utils/config.js";
 import { logger } from "../utils/logger.js";
 
-export const getTestTemplatesSchema = {
-  dashboardCategory: z.string().describe("The dashboard category to retrieve test templates for")
+export const getApiCollectionsSchema = {
+  dashboardCategory: z.string().describe("The dashboard category to retrieve API collections for")
 };
 
-export async function getTestTemplatesHandler({ dashboardCategory }: { dashboardCategory: string }) {
+export async function getApiCollectionsHandler({ dashboardCategory }: { dashboardCategory: string }) {
   try {
-    logger.info(`Fetching test templates for dashboard category: ${dashboardCategory}`);
+    logger.info(`Fetching API collections for dashboard category: ${dashboardCategory}`);
     
     // Disable SSL verification for localhost HTTPS (if needed)
     if (config.dashboard.apiUrl.startsWith('https://localhost')) {
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
     
-    const response = await fetch(`${config.dashboard.apiUrl}/api/fetchTemplatesByCategory`, {
+    const response = await fetch(`${config.dashboard.apiUrl}/api/getAllCollections`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,21 +34,24 @@ export async function getTestTemplatesHandler({ dashboardCategory }: { dashboard
       throw new Error(`API returned ${response.status}: ${response.statusText}`);
     }
     
-    const templates = await response.json();
+    const data: any = await response.json();
+    
+    // Extract only the apiCollections field from the response
+    const apiCollections = data.apiCollections || {};
     
     return {
       content: [{
         type: "text" as const,
-        text: JSON.stringify(templates, null, 2)
+        text: JSON.stringify(apiCollections, null, 2)
       }]
     };
   } catch (error) {
-    logger.error('Error fetching test templates:', error);
+    logger.error('Error fetching API collections:', error);
     
     return {
       content: [{
         type: "text" as const,
-        text: `Error fetching test templates: ${error instanceof Error ? error.message : 'Unknown error'}`
+        text: `Error fetching API collections: ${error instanceof Error ? error.message : 'Unknown error'}`
       }]
     };
   }
