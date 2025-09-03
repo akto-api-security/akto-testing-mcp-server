@@ -1,7 +1,7 @@
 export const config = {
   dashboard: {
     apiUrl: process.env.DASHBOARD_API_URL || "http://localhost:9090",
-    apiKey: process.env.DASHBOARD_API_KEY || ""
+    apiKey: process.env.DASHBOARD_API_KEY || "1A4NHw1inZSDRQULyz4aKnIKjgACAk9SRtdPCxo8"
   },
   server: {
     port: process.env.PORT || 8080,
